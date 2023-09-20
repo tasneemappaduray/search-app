@@ -1,36 +1,53 @@
 import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+const SEARCH_URL = "https://api.deezer.com/search?q=";
 
 function Search() {
 
-    const [artist, setArtist] = useState("");
+    const [search, setSearch] = useState("");
+    const [list, setList] = useState([]);
 
-
-
-    const getSearchApi = () => {
-        axios.get("https://api.deezer.com/search?q=%60").then(data => console.log('Deezer List', data.data)).catch(error => console.log(error));
+    const getSearchSongs = () => {
+        axios.get(SEARCH_URL + search)
+            .then(
+                (response) => {
+                    console.log('Deezer List', response.data.data)
+                    setList(response.data.data)
+                }
+            )
+            .catch(
+                (error) => {
+                    console.log(error)
+                }
+            );
     };
-    getSearchApi();
+    // getSearchSongs();
 
     const searchButton = () => {
-        console.log("You pressed me beech")
+       
+        if(search !== ""){
+            getSearchSongs()
+        } else if (search === "") {
+            console.log("Search is empty")
+        } else {
+            console.log("Something ain't right!")
+        }
     }
 
-    const editSearchBar = (prop) => {
-
-        // setArtist(prop.target.value)
-        console.log('show me whats in the search box', prop.target.value)
-
-    }
+    useEffect(() => {
+        searchButton();
+        console.log("Output search", list)
+    },[])
 
     return (
         <div>
-            <h1>This is our Search Bar App</h1>
-            <input type="search" onChange={editSearchBar} />
-            <button onClick={searchButton}>Search me beech</button>
+            <h1>Search Bar App</h1>
+            <input type="search" placeholder="Search for an artist" value={search} onChange={(event) => setSearch(event.target.value)} />
+            <button onClick={searchButton}>Search</button>
         </div>
     )
+
 }
 
 export default Search;
